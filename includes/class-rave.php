@@ -496,7 +496,9 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
             	$response_code 			= $response->data->flwMeta->chargeResponse;
 
-            	$payment_currency 		= $response->data->transaction_currency;
+            	$payment_currency       = $response->data->transaction_currency;
+
+        		$gateway_symbol         = get_woocommerce_currency_symbol( $payment_currency );
 
             	$valid_response_code	= array( '0', '00');
 
@@ -562,7 +564,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 		                    $order->add_order_note( $notice, 1 );
 
 			                // Add Admin Order Note
-		                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . '</strong> while the payment currency is <strong>'. $payment_currency . '</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
+		                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . ' ('. $currency_symbol . ')</strong> while the payment currency is <strong>'. $payment_currency . ' ('. $gateway_symbol . ')</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
 
 							wc_reduce_stock_levels( $order_id );
 
@@ -647,7 +649,9 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
         	$response_code 			= $response->data->flwMeta->chargeResponse;
 
-        	$payment_currency 		= $response->data->transaction_currency;
+        	$payment_currency       = $response->data->transaction_currency;
+
+        	$gateway_symbol         = get_woocommerce_currency_symbol( $payment_currency );
 
         	$valid_response_code	= array( '0', '00');
 
@@ -713,7 +717,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	                    $order->add_order_note( $notice, 1 );
 
 		                // Add Admin Order Note
-	                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . '</strong> while the payment currency is <strong>'. $payment_currency . '</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
+	                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . ' ('. $currency_symbol . ')</strong> while the payment currency is <strong>'. $payment_currency . ' ('. $gateway_symbol . ')</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
 
 						wc_reduce_stock_levels( $order_id );
 
