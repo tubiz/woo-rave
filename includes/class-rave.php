@@ -737,6 +737,8 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 			} else {
 
+				$order_details 	= explode( '|', $response->data->tx_ref );
+
 				$order_id 		= (int) $order_details[1];
 
 		        $order 			= wc_get_order( $order_id );
