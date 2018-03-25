@@ -496,7 +496,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
             	$response_code 			= $response->data->flwMeta->chargeResponse;
 
-            	$gateway_currency 		= $response->data->transaction_currency;
+            	$payment_currency 		= $response->data->transaction_currency;
 
             	$valid_response_code	= array( '0', '00');
 
@@ -534,14 +534,14 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 						add_post_meta( $order_id, '_transaction_id', $txn_ref, true );
 
-						$notice = 'Thank you for shopping with us.<br />Your payment transaction was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+						$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
 						$notice_type = 'notice';
 
 						// Add Customer Order Note
 	                    $order->add_order_note( $notice, 1 );
 
 		                // Add Admin Order Note
-	                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>'. $currency_symbol . $amount_paid . '</strong> while the total order amount is <strong>'. $currency_symbol . $order_total . '</strong><br />Transaction Reference: ' . $txn_ref . '| Payment Reference: ' . $payment_ref );
+	                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>'. $currency_symbol . $amount_paid . '</strong> while the total order amount is <strong>'. $currency_symbol . $order_total . '</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
 
 						wc_reduce_stock_levels( $order_id );
 
@@ -549,20 +549,20 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 					} else {
 
-						if( $gateway_currency === $order_currency ) {
+						if( $payment_currency !== $order_currency ) {
 
 							$order->update_status( 'on-hold', '' );
 
 							add_post_meta( $order_id, '_transaction_id', $txn_ref, true );
 
-							$notice = 'Thank you for shopping with us.<br />Your payment transaction was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+							$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the payment currency is different from the order currency.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
 							$notice_type = 'notice';
 
 							// Add Customer Order Note
 		                    $order->add_order_note( $notice, 1 );
 
 			                // Add Admin Order Note
-		                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>'. $currency_symbol . $amount_paid . '</strong> while the total order amount is <strong>'. $currency_symbol . $order_total . '</strong><br />Transaction Reference: ' . $txn_ref . '| Payment Reference: ' . $payment_ref );
+		                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . '</strong> while the payment currency is <strong>'. $payment_currency . '</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
 
 							wc_reduce_stock_levels( $order_id );
 
@@ -572,7 +572,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 							$order->payment_complete( $txn_ref );
 
-							$order->add_order_note( sprintf( 'Payment via Rave successful (Transaction Reference: %s | Payment Reference: %s)', $txn_ref, $payment_ref ) );
+							$order->add_order_note( sprintf( 'Payment via Rave successful (<strong>Transaction Reference:</strong> %s | <strong>Payment Reference:</strong> %s)', $txn_ref, $payment_ref ) );
 
 						}
 
@@ -647,7 +647,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
         	$response_code 			= $response->data->flwMeta->chargeResponse;
 
-        	$gateway_currency 		= $response->data->transaction_currency;
+        	$payment_currency 		= $response->data->transaction_currency;
 
         	$valid_response_code	= array( '0', '00');
 
@@ -687,22 +687,45 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 					add_post_meta( $order_id, '_transaction_id', $txn_ref, true );
 
-					$notice = 'Thank you for shopping with us.<br />Your payment transaction was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+					$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
 					$notice_type = 'notice';
 
 					// Add Customer Order Note
                     $order->add_order_note( $notice, 1 );
 
 	                // Add Admin Order Note
-	                $order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>'. $currency_symbol . $amount_paid . '</strong> while the total order amount is <strong>'. $currency_symbol . $order_total . '</strong><br />Transaction Reference: ' . $txn_ref . '| Payment Reference: ' . $payment_ref );
+	                $order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>'. $currency_symbol . $amount_paid . '</strong> while the total order amount is <strong>'. $currency_symbol . $order_total . '</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
 
 					wc_reduce_stock_levels( $order_id );
 
 				} else {
 
-					$order->payment_complete( $txn_ref );
+					if( $payment_currency !== $order_currency ) {
 
-					$order->add_order_note( sprintf( 'Payment via Rave successful (Transaction Reference: %s | Payment Reference: %s)', $txn_ref, $payment_ref ) );
+						$order->update_status( 'on-hold', '' );
+
+						add_post_meta( $order_id, '_transaction_id', $txn_ref, true );
+
+						$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the payment currency is different from the order currency.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+						$notice_type = 'notice';
+
+						// Add Customer Order Note
+	                    $order->add_order_note( $notice, 1 );
+
+		                // Add Admin Order Note
+	                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . '</strong> while the payment currency is <strong>'. $payment_currency . '</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
+
+						wc_reduce_stock_levels( $order_id );
+
+						wc_add_notice( $notice, $notice_type );
+
+					} else {
+
+						$order->payment_complete( $txn_ref );
+
+						$order->add_order_note( sprintf( 'Payment via Rave successful (<strong>Transaction Reference:</strong> %s | <strong>Payment Reference:</strong> %s)', $txn_ref, $payment_ref ) );
+
+					}
 
 				}
 
