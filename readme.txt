@@ -34,6 +34,12 @@ With this WooCommerce Rave Payment Gateway plugin, you will be able to accept th
 *   __Multiple payment channels__ available for your customers.
 * 	__Seamless integration__ into the WooCommerce checkout page.
 
+= Note =
+
+*	You will need to set your store country to either Nigeria, Kenya, Ghana or South Africa in the General tab on the WooCommerce settings page
+*	Currencies supported by Rave: NGN, USD, EUR, GBP, KES, GHS, ZAR
+
+
 
 = Suggestions / Feature Request =
 
