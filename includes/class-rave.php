@@ -534,7 +534,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 						$order->update_status( 'on-hold', '' );
 
-						add_post_meta( $order_id, '_transaction_id', $txn_ref, true );
+						update_post_meta( $order_id, '_transaction_id', $txn_ref );
 
 						$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
 						$notice_type = 'notice';
@@ -555,7 +555,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 							$order->update_status( 'on-hold', '' );
 
-							add_post_meta( $order_id, '_transaction_id', $txn_ref, true );
+							update_post_meta( $order_id, '_transaction_id', $txn_ref );
 
 							$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the payment currency is different from the order currency.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
 							$notice_type = 'notice';
@@ -689,7 +689,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 					$order->update_status( 'on-hold', '' );
 
-					add_post_meta( $order_id, '_transaction_id', $txn_ref, true );
+					update_post_meta( $order_id, '_transaction_id', $txn_ref );
 
 					$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
 					$notice_type = 'notice';
@@ -708,7 +708,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 						$order->update_status( 'on-hold', '' );
 
-						add_post_meta( $order_id, '_transaction_id', $txn_ref, true );
+						update_post_meta( $order_id, '_transaction_id', $txn_ref );
 
 						$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the payment currency is different from the order currency.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
 						$notice_type = 'notice';
