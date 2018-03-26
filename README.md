@@ -1,12 +1,23 @@
+> To install the plugin on your website, use the latest version from the WordPress plugin directory [WooCommerce Rave Payment Gateway](https://wordpress.org/plugins/tubiz/woo-rave)
+
 # WooCommerce Rave Payment Gateway
+
 **Contributors:** tubiz
+
 **Donate link:** https://bosun.me/donate
+
 **Tags:** woocommerce, rave, flutterwave, payment gateway, payment gateways, mastercard, visa cards, verve cards, tubiz plugins, verve, nigeria, ghana, kenya, south africa, mpesa
+
 **Requires at least:** 4.4
+
 **Requires PHP:** 5.6
+
 **Tested up to:** 4.9
+
 **Stable tag:** 1.0.0
+
 **License:** GPLv2 or later
+
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html
 
 WooCommerce Rave payment gateway plugin allows you to accept payment on your WooCommerce store through multiple payment channels via Rave by Flutterwave
