@@ -407,6 +407,8 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 		$hashedPayload .= $this->secret_key;
 
+		$hashedPayload = html_entity_decode( $hashedPayload );
+
 	    $hash = hash( 'sha256', $hashedPayload );
 
 	    return $hash;

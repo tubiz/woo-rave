@@ -3,7 +3,7 @@
 	Plugin Name:			WooCommerce Rave Payment Gateway
 	Plugin URI: 			https://rave.flutterwave.com
 	Description:            WooCommerce payment gateway for Rave by Flutterwave
-	Version:                1.0.0
+	Version:                1.0.1
 	Author: 				Tunbosun Ayinla
 	Author URI: 			https://bosun.me
 	License:        		GPL-2.0+
@@ -20,7 +20,7 @@ define( 'TBZ_WC_RAVE_MAIN_FILE', __FILE__ );
 
 define( 'TBZ_WC_RAVE_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
-define( 'TBZ_WC_RAVE_VERSION', '1.0.0' );
+define( 'TBZ_WC_RAVE_VERSION', '1.0.1' );
 
 function tbz_wc_rave_init() {
 

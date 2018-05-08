@@ -5,7 +5,7 @@ Tags: woocommerce, rave, flutterwave, payment gateway, payment gateways, masterc
 Requires at least: 4.4
 Requires PHP: 5.6
 Tested up to: 4.9
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,7 +113,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
-= 1.0.0 =
+= 1.0.1 (May 08, 2018) =
+*   Fix: Bad integrity hash if & is used in the custom title or custom description text
+
+= 1.0.0 (March 26, 2018) =
 *   First release
 
 
@@ -122,7 +125,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-*	There is no need to upgrade just yet.
+= 1.0.1 =
+*   Fix: Bad integrity hash if & is used in the custom title or custom description text
 
 
 == Screenshots ==
