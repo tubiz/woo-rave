@@ -14,6 +14,20 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 		$this->method_title 	    = 'Rave by Flutterwave';
 		$this->has_fields 	    	= true;
 
+		$this->supports           	= array(
+			'products',
+			'tokenization',
+			'subscriptions',
+			'multiple_subscriptions',
+			'subscription_cancellation',
+			'subscription_suspension',
+			'subscription_reactivation',
+			'subscription_amount_changes',
+			'subscription_date_changes',
+			'subscription_payment_method_change',
+			'subscription_payment_method_change_customer'
+		);
+
 		// Load the form fields
 		$this->init_form_fields();
 
@@ -21,31 +35,39 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 		$this->init_settings();
 
 		// Get setting values
-		$this->title 				= $this->get_option( 'title' );
-		$this->description 			= $this->get_option( 'description' );
-		$this->enabled            	= $this->get_option( 'enabled' );
+		$this->title                = $this->get_option( 'title' );
+		$this->description          = $this->get_option( 'description' );
+		$this->enabled              = $this->get_option( 'enabled' );
 		$this->testmode             = $this->get_option( 'testmode' ) === 'yes' ? true : false;
 
 		$this->payment_method       = $this->get_option( 'payment_method' );
 
-		$this->custom_title       	= $this->get_option( 'custom_title' );
-		$this->custom_desc       	= $this->get_option( 'custom_desc' );
-		$this->custom_logo       	= $this->get_option( 'custom_logo' );
+		$this->custom_title         = $this->get_option( 'custom_title' );
+		$this->custom_desc          = $this->get_option( 'custom_desc' );
+		$this->custom_logo          = $this->get_option( 'custom_logo' );
 
-		$this->test_public_key  	= $this->get_option( 'test_public_key' );
-		$this->test_secret_key  	= $this->get_option( 'test_secret_key' );
+		$this->test_public_key      = $this->get_option( 'test_public_key' );
+		$this->test_secret_key      = $this->get_option( 'test_secret_key' );
 
-		$this->live_public_key  	= $this->get_option( 'live_public_key' );
-		$this->live_secret_key  	= $this->get_option( 'live_secret_key' );
+		$this->live_public_key      = $this->get_option( 'live_public_key' );
+		$this->live_secret_key      = $this->get_option( 'live_secret_key' );
 
-		$this->public_key      		= $this->testmode ? $this->test_public_key : $this->live_public_key;
-		$this->secret_key      		= $this->testmode ? $this->test_secret_key : $this->live_secret_key;
+		$this->public_key           = $this->testmode ? $this->test_public_key : $this->live_public_key;
+		$this->secret_key           = $this->testmode ? $this->test_secret_key : $this->live_secret_key;
 
-		$this->test_query_url 		= 'http://flw-pms-dev.eu-west-1.elasticbeanstalk.com/flwv3-pug/getpaidx/api/verify';
+		$this->saved_cards          = $this->get_option( 'saved_cards' ) === 'yes' ? true : false;
 
-		$this->live_query_url		= 'https://api.ravepay.co/flwv3-pug/getpaidx/api/verify';
+		$this->test_query_url       = 'https://ravesandboxapi.flutterwave.com/flwv3-pug/getpaidx/api/verify';
 
-		$this->query_url 			= $this->testmode ? $this->test_query_url : $this->live_query_url;
+		$this->live_query_url       = 'https://api.ravepay.co/flwv3-pug/getpaidx/api/verify';
+
+		$this->query_url            = $this->testmode ? $this->test_query_url : $this->live_query_url;
+
+		$this->test_tokenized_url   = 'https://ravesandboxapi.flutterwave.com/flwv3-pug/getpaidx/api/tokenized/charge';
+
+		$this->live_tokenized_url   = 'https://api.ravepay.co/flwv3-pug/getpaidx/api/tokenized/charge';
+
+		$this->tokenized_url        = $this->testmode ? $this->test_tokenized_url : $this->live_tokenized_url;
 
 		// Hooks
 		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
@@ -183,7 +205,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
         <?php
 
-		if ( $this->is_valid_for_use() ){
+		if ( $this->is_valid_for_use() ) {
 
             echo '<table class="form-table">';
             $this->generate_settings_html();
@@ -298,8 +320,38 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 				'description' => 'Optional: Enter the link to a image to be displayed on the payment popup. Preferably a square image.',
 				'default'     => '',
     			'desc_tip'    => true,
+			),
+			'saved_cards' 	  => array(
+				'title'       => 'Saved Cards',
+				'label'       => 'Enable Payment via Saved Cards',
+				'type'        => 'checkbox',
+				'description' => 'If enabled, users will be able to pay with a saved card during checkout. Card details are saved on Rave servers, not on your store.<br>Note that you need to have a valid SSL certificate installed.',
+				'default'     => 'no',
+				'desc_tip'    => true
 			)
 		);
+	}
+
+
+	/**
+	 * Payment form on checkout page
+	 */
+	public function payment_fields() {
+
+		if ( $this->description ) {
+			echo wpautop( wptexturize( $this->description ) );
+		}
+
+		if ( ! is_ssl() ){
+			return;
+		}
+
+		if ( $this->supports( 'tokenization' ) && is_checkout() && $this->saved_cards && is_user_logged_in() ) {
+			$this->tokenization_script();
+			$this->saved_payment_methods();
+			$this->save_payment_method_checkbox();
+		}
+
 	}
 
 
@@ -333,7 +385,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 		if ( $this->testmode ) {
 
-			wp_enqueue_script( 'tbz_rave', 'http://flw-pms-dev.eu-west-1.elasticbeanstalk.com/flwv3-pug/getpaidx/api/flwpbf-inline.js', array( 'jquery' ), TBZ_WC_RAVE_VERSION, false );
+			wp_enqueue_script( 'tbz_rave', 'https://ravesandboxapi.flutterwave.com/flwv3-pug/getpaidx/api/flwpbf-inline.js', array( 'jquery' ), TBZ_WC_RAVE_VERSION, false );
 
 		} else {
 
@@ -436,50 +488,93 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	 */
 	public function process_payment( $order_id ) {
 
-		$order = wc_get_order( $order_id );
+		if ( isset( $_POST['wc-tbz_rave-payment-token'] ) && 'new' !== $_POST['wc-tbz_rave-payment-token'] ) {
 
-		return array(
-			'result'   => 'success',
-			'redirect' => $order->get_checkout_payment_url( true )
-		);
+			$token_id = wc_clean( $_POST['wc-tbz_rave-payment-token'] );
+			$token    = WC_Payment_Tokens::get( $token_id );
+
+			if ( $token->get_user_id() !== get_current_user_id() ) {
+
+				wc_add_notice( 'Invalid token ID', 'error' );
+
+				return;
+
+			} else {
+
+				$status = $this->process_token_payment( $token->get_token(), $order_id );
+
+				if( $status ) {
+
+					$order = wc_get_order( $order_id );
+
+					return array(
+						'result'   => 'success',
+						'redirect' => $this->get_return_url( $order )
+					);
+
+				}
+
+			}
+		} else {
+
+			if ( is_user_logged_in() && isset( $_POST[ 'wc-tbz_rave-new-payment-method' ] ) && true === (bool) $_POST[ 'wc-tbz_rave-new-payment-method' ] && $this->saved_cards ) {
+
+				update_post_meta( $order_id, '_wc_rave_save_card', true );
+
+			}
+
+			$order = wc_get_order( $order_id );
+
+			return array(
+				'result'   => 'success',
+				'redirect' => $order->get_checkout_payment_url( true )
+			);
+
+		}
 
 	}
 
 
-	/**
-	 * Displays the payment page
-	 */
-	public function receipt_page( $order_id ) {
-
-		$order = wc_get_order( $order_id );
-
-		echo '<p>Thank you for your order, please click the button below to pay with Rave.</p>';
-
-		echo '<div id="tbz_wc_rave_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Rave_Gateway' ) .'"></form><button class="button alt" id="tbz-rave-wc-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
-			';
-
-	}
-
 
 	/**
-	 * Verify Rave payment
+	 * Process a token payment
 	 */
-	public function verify_rave_transaction() {
+	public function process_token_payment( $token, $order_id ) {
 
-		@ob_clean();
+		if ( $token && $order_id ) {
 
-		if ( isset( $_REQUEST['tbz_wc_rave_txnref'] ) ){
+			$order            = wc_get_order( $order_id );
 
-			$rave_verify_url = $this->query_url;
+			$txnref           = 'WC|' . $order_id . '|' .uniqid();
+
+			$order_amount     = method_exists( $order, 'get_total' ) ? $order->get_total() : $order->order_total;
+
+			$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
+
+			$first_name  	  = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
+			$last_name  	  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
+
+			$ip_address       = $order->get_customer_ip_address();
 
 			$headers = array(
 				'Content-Type'	=> 'application/json'
 			);
 
+			$payment_token = explode( '##', $token );
+
+			$token_code    = $payment_token[0];
+			$token_email   = $payment_token[1];
+
 			$body = array(
-				'flw_ref' 	=> $_REQUEST['tbz_wc_rave_txnref'],
 				'SECKEY' 	=> $this->secret_key,
-				'normalize' => '1'
+				'token'		=> $token_code,
+				'currency'	=> $order_currency,
+				'amount'	=> $order_amount,
+				'email'		=> $token_email,
+				'firstname' => $first_name,
+				'lastname'  => $last_name,
+				'IP'		=> $ip_address,
+				'txRef'		=> $txnref,
 			);
 
 			$args = array(
@@ -488,29 +583,25 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 				'timeout'	=> 60
 			);
 
-			$request = wp_remote_post( $rave_verify_url, $args );
+			$request  = wp_remote_post( $this->tokenized_url, $args );
+
+        	$response = json_decode( wp_remote_retrieve_body( $request ) );
 
 	        if ( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
 
-            	$response = json_decode( wp_remote_retrieve_body( $request ) );
+            	$response               = json_decode( wp_remote_retrieve_body( $request ) );
 
             	$status 		 		= $response->status;
 
-            	$response_code 			= $response->data->flwMeta->chargeResponse;
+            	$response_code 			= $response->data->chargeResponseCode;
 
-            	$payment_currency       = $response->data->transaction_currency;
+            	$payment_currency       = $response->data->currency;
 
         		$gateway_symbol         = get_woocommerce_currency_symbol( $payment_currency );
 
             	$valid_response_code	= array( '0', '00');
 
 				if ( 'success' === $status && in_array( $response_code, $valid_response_code ) ) {
-
-					$order_details 	= explode( '|', $response->data->tx_ref );
-
-					$order_id 		= (int) $order_details[1];
-
-			        $order 			= wc_get_order( $order_id );
 
 			        if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 
@@ -528,8 +619,8 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 	        		$amount_paid	= $response->data->amount;
 
-	        		$txn_ref 		= $response->data->tx_ref;
-	        		$payment_ref 	= $response->data->flw_ref;
+	        		$txn_ref 		= $response->data->txRef;
+	        		$payment_ref 	= $response->data->flwRef;
 
 					// check if the amount paid is equal to the order amount.
 					if ( $amount_paid < $order_total ) {
@@ -582,6 +673,196 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 					}
 
+					$this->save_subscription_payment_token( $order_id, $token_code, $token_email );
+
+					wc_empty_cart();
+
+					return true;
+
+				} else {
+
+			        $order = wc_get_order( $order_id );
+
+					$order->update_status( 'failed', 'Payment was declined by Rave.' );
+
+					wc_add_notice( 'Payment Failed. Try again.', 'error' );
+
+					return false;
+
+				}
+
+	        } else {
+
+        		$response = json_decode( wp_remote_retrieve_body( $request ) );
+
+				wc_add_notice( 'Payment failed using the saved card. Kindly use another payment method.', 'error' );
+
+				return false;
+
+	        }
+
+		} else {
+
+			wc_add_notice( 'Payment Failed.', 'error' );
+
+			return false;
+
+		}
+
+	}
+
+	/**
+	 * Show new card can only be added when placing an order notice
+	 */
+	public function add_payment_method() {
+
+		wc_add_notice( 'You can only add a new card when placing an order.', 'error' );
+
+		return;
+
+	}
+
+	/**
+	 * Displays the payment page
+	 */
+	public function receipt_page( $order_id ) {
+
+		$order = wc_get_order( $order_id );
+
+		echo '<p>Thank you for your order, please click the button below to pay with Rave.</p>';
+
+		echo '<div id="tbz_wc_rave_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Rave_Gateway' ) .'"></form><button class="button alt" id="tbz-rave-wc-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
+			';
+
+	}
+
+
+	/**
+	 * Verify Rave payment
+	 */
+	public function verify_rave_transaction() {
+
+		@ob_clean();
+
+		if ( isset( $_REQUEST['tbz_wc_rave_txnref'] ) ) {
+
+			$rave_verify_url = $this->query_url;
+
+			$headers = array(
+				'Content-Type'	=> 'application/json'
+			);
+
+			$body = array(
+				'flw_ref' 	=> $_REQUEST['tbz_wc_rave_txnref'],
+				'SECKEY' 	=> $this->secret_key,
+				'normalize' => '1'
+			);
+
+			$args = array(
+				'headers'	=> $headers,
+				'body'		=> json_encode( $body ),
+				'timeout'	=> 60
+			);
+
+			$request = wp_remote_post( $rave_verify_url, $args );
+
+
+	        if ( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
+
+            	$response               = json_decode( wp_remote_retrieve_body( $request ) );
+
+            	$status 		 		= $response->status;
+
+            	$response_code 			= $response->data->flwMeta->chargeResponse;
+
+            	$payment_currency       = $response->data->transaction_currency;
+
+        		$gateway_symbol         = get_woocommerce_currency_symbol( $payment_currency );
+
+            	$valid_response_code	= array( '0', '00');
+
+				if ( 'success' === $status && in_array( $response_code, $valid_response_code ) ) {
+
+					$order_details 	= explode( '|', $response->data->tx_ref );
+
+					$order_id 		= (int) $order_details[1];
+
+			        $order 			= wc_get_order( $order_id );
+
+			        if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
+
+			        	wp_redirect( $this->get_return_url( $order ) );
+
+						exit;
+
+			        }
+
+					$order_currency = $order->get_currency();
+
+					$currency_symbol= get_woocommerce_currency_symbol( $order_currency );
+
+	        		$order_total	= $order->get_total();
+
+	        		$amount_paid	= $response->data->amount;
+
+	        		$txn_ref 		= $response->data->tx_ref;
+	        		$payment_ref 	= $response->data->flw_ref;
+
+					$billing_email  = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+
+					// check if the amount paid is equal to the order amount.
+					if ( $amount_paid < $order_total ) {
+
+						$order->update_status( 'on-hold', '' );
+
+						update_post_meta( $order_id, '_transaction_id', $txn_ref );
+
+						$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+						$notice_type = 'notice';
+
+						// Add Customer Order Note
+	                    $order->add_order_note( $notice, 1 );
+
+		                // Add Admin Order Note
+	                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>'. $currency_symbol . $amount_paid . '</strong> while the total order amount is <strong>'. $currency_symbol . $order_total . '</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
+
+						wc_reduce_stock_levels( $order_id );
+
+						wc_add_notice( $notice, $notice_type );
+
+					} else {
+
+						if( $payment_currency !== $order_currency ) {
+
+							$order->update_status( 'on-hold', '' );
+
+							update_post_meta( $order_id, '_transaction_id', $txn_ref );
+
+							$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the payment currency is different from the order currency.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+							$notice_type = 'notice';
+
+							// Add Customer Order Note
+		                    $order->add_order_note( $notice, 1 );
+
+			                // Add Admin Order Note
+		                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . ' ('. $currency_symbol . ')</strong> while the payment currency is <strong>'. $payment_currency . ' ('. $gateway_symbol . ')</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
+
+							wc_reduce_stock_levels( $order_id );
+
+							wc_add_notice( $notice, $notice_type );
+
+						} else {
+
+							$order->payment_complete( $txn_ref );
+
+							$order->add_order_note( sprintf( 'Payment via Rave successful (<strong>Transaction Reference:</strong> %s | <strong>Payment Reference:</strong> %s)', $txn_ref, $payment_ref ) );
+
+						}
+
+					}
+
+					$this->save_card_details( $response, $order->get_user_id(), $order_id, $billing_email );
+
 					wc_empty_cart();
 
 				} else {
@@ -619,14 +900,19 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 			exit;
 		}
 
-		if ( ! isset( $_POST['flwRef'], $_POST['txRef'] ) ) {
+		$body = @file_get_contents( "php://input" );
+
+		if ( $this->isJSON( $body ) ) {
+			$_POST = (array) json_decode( $body );
+		}
+		if ( ! isset( $_POST['flwRef'] ) ) {
 			exit;
 		}
 
 		$rave_verify_url = $this->query_url;
 
 		$headers = array(
-			'Content-Type'	=> 'application/json'
+			'Content-Type' => 'application/json'
 		);
 
 		$body = array(
@@ -645,7 +931,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
         if ( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
 
-        	$response = json_decode( wp_remote_retrieve_body( $request ) );
+        	$response               = json_decode( wp_remote_retrieve_body( $request ) );
 
         	$status 		 		= $response->status;
 
@@ -670,6 +956,8 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 		        if ( $response->data->tx_ref != $rave_txn_ref ) {
 		        	exit;
 		        }
+
+				http_response_code( 200 );
 
 		        if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 					exit;
@@ -752,6 +1040,101 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
         }
 
 	    exit;
+	}
+
+
+	/**
+	 * Save Customer Card Details
+	 */
+	public function save_card_details( $rave_response, $user_id, $order_id, $billing_email ) {
+
+		if( isset( $rave_response->data->card->life_time_token ) ) {
+			$token_code = $rave_response->data->card->life_time_token;
+		} else {
+			$token_code = '';
+		}
+
+		$this->save_subscription_payment_token( $order_id, $token_code, $billing_email );
+
+		$save_card = get_post_meta( $order_id, '_wc_rave_save_card', true );
+
+		if ( isset( $rave_response->data->card ) && $user_id && $this->saved_cards && $save_card && ! empty( $rave_response->data->card->life_time_token ) ) {
+
+			$last4 		= $rave_response->data->card->last4digits;
+
+			if ( 4 !== strlen( $rave_response->data->card->expiryyear ) ) {
+				$exp_year 	= substr( date( 'Y' ), 0, 2 ) . $rave_response->data->card->expiryyear;
+			} else {
+				$exp_year 	= $rave_response->data->card->expiryyear;
+			}
+
+			$brand 		= $rave_response->data->card->brand;
+			$exp_month 	= $rave_response->data->card->expirymonth;
+			$auth_code 	= $rave_response->data->card->life_time_token;
+
+			$payment_token = $auth_code . '##' . $billing_email;
+
+			$token = new WC_Payment_Token_CC();
+			$token->set_token( $payment_token );
+			$token->set_gateway_id( 'tbz_rave' );
+			$token->set_card_type( $brand );
+			$token->set_last4( $last4 );
+			$token->set_expiry_month( $exp_month  );
+			$token->set_expiry_year( $exp_year );
+			$token->set_user_id( $user_id );
+			$token->save();
+
+		}
+
+		delete_post_meta( $order_id, '_wc_rave_save_card' );
+
+	}
+
+
+	/**
+	 * Save payment token to the order for automatic renewal for further subscription payment
+	 */
+	public function save_subscription_payment_token( $order_id, $token_code, $billing_email ) {
+
+		if ( ! function_exists ( 'wcs_order_contains_subscription' ) ) {
+
+			return;
+
+		}
+
+		if ( $this->order_contains_subscription( $order_id ) && ! empty( $token_code ) ) {
+
+			$payment_token = $token_code . '##' . $billing_email;
+
+			// Also store it on the subscriptions being purchased or paid for in the order
+			if ( function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id ) ) {
+
+				$subscriptions = wcs_get_subscriptions_for_order( $order_id );
+
+			} elseif ( function_exists( 'wcs_order_contains_renewal' ) && wcs_order_contains_renewal( $order_id ) ) {
+
+				$subscriptions = wcs_get_subscriptions_for_renewal_order( $order_id );
+
+			} else {
+
+				$subscriptions = array();
+
+			}
+
+			foreach ( $subscriptions as $subscription ) {
+
+				$subscription_id = $subscription->get_id();
+
+				update_post_meta( $subscription_id, '_tbz_rave_wc_token', $payment_token );
+
+			}
+
+		}
+
+	}
+
+	public function isJSON( $string ) {
+   		return is_string($string) && is_array( json_decode( $string, true ) ) ? true : false;
 	}
 
 }

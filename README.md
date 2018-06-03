@@ -14,7 +14,7 @@
 
 **Tested up to:** 4.9
 
-**Stable tag:** 1.0.1
+**Stable tag:** 2.0.0
 
 **License:** GPLv2 or later
 
@@ -46,6 +46,13 @@ With this WooCommerce Rave Payment Gateway plugin, you will be able to accept th
 
 * __Multiple payment channels__ available for your customers.
 * __Seamless integration__ into the WooCommerce checkout page.
+
+
+### WooCommerce Subscriptions Integration =
+
+*	The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) integration only works with WooCommerce v2.6 and above and WooCommerce Subscriptions v2.0 and above.
+
+*	No subscription plans is created on Rave. The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) handles all the subscription functionality.
 
 
 ### Note
@@ -131,18 +138,24 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 1.	You need to have the WooCommerce plugin installed and activated on your WordPress site.
 2.	You need to open a merchant account on [Rave](https://rave.flutterwave.com)
 
+### WooCommerce Subscriptions Integration =
 
+*	The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) integration only works with WooCommerce v2.6 and above and WooCommerce Subscriptions v2.0 and above.
 
+*	No subscription plans is created on Rave. The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) handles all the subscription functionality.
 
 
 ## Changelog
+
+### 2.0.0 (June 03, 2018) =
+* 	New: Saved cards - allow store customers to save their card details and pay again using the same card. Card details are saved on Rave servers and not on your store.
+* 	New: Add support for recurring payment using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin.
 
 ### 1.0.1 (May 08, 2018) =
 *   Fix: Bad integrity hash if & is used in the custom title or custom description text
 
 ### 1.0.0 (March 26, 2018) =
 *   First release
-  First release
 
 
 
@@ -151,8 +164,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 1.0.1 =
-*   Fix: Bad integrity hash if & is used in the custom title or custom description text
+### 2.0.0 =
+*   Saved cards - allow store customers to save their card details and pay again using the same card. Add support for recurring payment using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin.
 
 
 

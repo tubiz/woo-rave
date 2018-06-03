@@ -3,13 +3,13 @@
 	Plugin Name:			WooCommerce Rave Payment Gateway
 	Plugin URI: 			https://rave.flutterwave.com
 	Description:            WooCommerce payment gateway for Rave by Flutterwave
-	Version:                1.0.1
+	Version:                2.0.0
 	Author: 				Tunbosun Ayinla
 	Author URI: 			https://bosun.me
 	License:        		GPL-2.0+
 	License URI:    		http://www.gnu.org/licenses/gpl-2.0.txt
 	WC requires at least:   3.0.0
-	WC tested up to:        3.3.0
+	WC tested up to:        3.4.0
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,7 +20,7 @@ define( 'TBZ_WC_RAVE_MAIN_FILE', __FILE__ );
 
 define( 'TBZ_WC_RAVE_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
-define( 'TBZ_WC_RAVE_VERSION', '1.0.1' );
+define( 'TBZ_WC_RAVE_VERSION', '2.0.0' );
 
 function tbz_wc_rave_init() {
 
@@ -29,6 +29,15 @@ function tbz_wc_rave_init() {
 	}
 
 	require_once dirname( __FILE__ ) . '/includes/class-rave.php';
+
+
+	if ( class_exists( 'WC_Subscriptions_Order' ) && class_exists( 'WC_Payment_Gateway_CC' ) ) {
+
+		require_once dirname( __FILE__ ) . '/includes/class-wc-subscriptions.php';
+
+	}
+
+	require_once dirname( __FILE__ ) . '/includes/polyfill.php';
 
 
 	add_filter( 'woocommerce_payment_gateways', 'tbz_wc_add_rave_gateway' );
@@ -57,7 +66,11 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'tbz_wc_rave_p
 **/
 function tbz_wc_add_rave_gateway( $methods ) {
 
-	$methods[] = 'Tbz_WC_Rave_Gateway';
+	if ( class_exists( 'WC_Subscriptions_Order' ) && class_exists( 'WC_Payment_Gateway_CC' ) ) {
+		$methods[] = 'Tbz_WC_Gateway_Rave_Subscription';
+	} else {
+		$methods[] = 'Tbz_WC_Rave_Gateway';
+	}
 
 	return $methods;
 
