@@ -15,10 +15,33 @@ class Tbz_WC_Gateway_Rave_Subscription extends Tbz_WC_Rave_Gateway {
 
         if ( class_exists( 'WC_Subscriptions_Order' ) ) {
 
+	        add_action( 'wcs_renewal_order_created', array( $this, 'delete_renewal_meta' ), 10 );
             add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id, array( $this, 'scheduled_subscription_payment' ), 10, 2 );
 
         }
     }
+
+	/**
+	 * Don't transfer Rave fee/ID meta to renewal orders.
+	 *
+	 * @param WC_Order $renewal_order The order created for the customer to resubscribe to the old expired/cancelled subscription
+	 *
+	 * @return WC_Order Renewal order
+	 */
+	public function delete_renewal_meta( $renewal_order ) {
+
+		if ( $this->is_wc_lt( '3.0' ) ) {
+			$order_id = $renewal_order->id;
+		} else {
+			$order_id = $renewal_order->get_id();
+		}
+
+		delete_post_meta( $order_id, '_rave_fee' );
+		delete_post_meta( $order_id, '_rave_net' );
+		delete_post_meta( $order_id, '_rave_currency' );
+
+		return $renewal_order;
+	}
 
     /**
      * Check if an order contains a subscription
@@ -92,20 +115,23 @@ class Tbz_WC_Gateway_Rave_Subscription extends Tbz_WC_Rave_Gateway {
 
             $first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
             $last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
+	        $email      = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
 
             $ip_address = $order->get_customer_ip_address();
 
-            $payment_token = explode('##', $auth_code);
-
-            $token_code  = $payment_token[0];
-            $token_email = $payment_token[1];
+	        if ( strpos( $auth_code, '##' ) !== false ) {
+		        $payment_token = explode( '##', $auth_code );
+		        $token_code    = $payment_token[0];
+	        } else {
+		        $token_code = $auth_code;
+	        }
 
             $body = array(
                 'SECKEY'    => $this->secret_key,
                 'token'     => $token_code,
                 'currency'  => $order_currency,
                 'amount'    => $amount,
-                'email'     => $token_email,
+                'email'     => $email,
                 'firstname' => $first_name,
                 'lastname'  => $last_name,
                 'IP'        => $ip_address,
@@ -130,14 +156,27 @@ class Tbz_WC_Gateway_Rave_Subscription extends Tbz_WC_Rave_Gateway {
 
                 $payment_currency = $response->data->currency;
 
-                $gateway_symbol = get_woocommerce_currency_symbol( $payment_currency );
-
                 $valid_response_code = array( '0', '00' );
 
                 if ( 'success' === $status && in_array( $response_code, $valid_response_code ) ) {
 
                     $txn_ref     = $response->data->txRef;
                     $payment_ref = $response->data->flwRef;
+
+	                $amount_charged = $response->data->charged_amount;
+
+	                $rave_fee       = $response->data->appfee;
+	                $rave_net       = $amount_charged - $rave_fee;
+
+	                if ( $this->is_wc_lt( '3.0' ) ) {
+		                update_post_meta( $order_id, '_rave_fee', $rave_fee );
+		                update_post_meta( $order_id, '_rave_net', $rave_net );
+		                update_post_meta( $order_id, '_rave_currency', $payment_currency );
+	                } else {
+		                $order->update_meta_data( '_rave_fee', $rave_fee );
+		                $order->update_meta_data( '_rave_net', $rave_net );
+		                $order->update_meta_data( '_rave_currency', $payment_currency );
+	                }
 
                     $order->payment_complete( $txn_ref );
 
