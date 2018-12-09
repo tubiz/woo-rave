@@ -10,8 +10,10 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->id		   			= 'tbz_rave';
-		$this->method_title 	    = 'Rave by Flutterwave';
+		$this->id                 = 'tbz_rave';
+		$this->method_title       = 'Rave by Flutterwave';
+		$this->method_description = sprintf( 'Rave by Flutterwave is the easiest way to collect payments from customers anywhere in the world. <a href="%1$s" target="_blank">Sign up</a> for a Rave account, and <a href="%2$s" target="_blank">get your API keys</a>.', 'https://rave.flutterwave.com', 'https://rave.flutterwave.com/dashboard/settings/apis' );
+
 		$this->has_fields 	    	= true;
 
 		$this->supports           	= array(
@@ -40,7 +42,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 		$this->enabled              = $this->get_option( 'enabled' );
 		$this->testmode             = $this->get_option( 'testmode' ) === 'yes' ? true : false;
 
-		$this->payment_method       = $this->get_option( 'payment_method' );
+		$this->payment_methods      = $this->get_option( 'payment_method' );
 
 		$this->custom_title         = $this->get_option( 'custom_title' );
 		$this->custom_desc          = $this->get_option( 'custom_desc' );
@@ -76,6 +78,9 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
+		add_action( 'woocommerce_admin_order_totals_after_total', array( $this, 'display_rave_fee' ) );
+		add_action( 'woocommerce_admin_order_totals_after_total', array( $this, 'display_order_payout' ), 20 );
+
 		add_action( 'woocommerce_receipt_' . $this->id, array( $this, 'receipt_page' ) );
 
 		// Payment listener/API hook
@@ -105,7 +110,6 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 		$valid_currencies = array( 'NGN', 'USD', 'EUR', 'GBP', 'KES', 'GHS', 'ZAR' );
 
 		$base_location    = wc_get_base_location();
-		$country          = $base_location['country'];
 
 		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_rave_supported_currencies',  $valid_currencies ) ) ) {
 
@@ -226,110 +230,115 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	public function init_form_fields() {
 
 		$this->form_fields = array(
-			'enabled' => array(
+			'enabled'               => array(
 				'title'       => 'Enable/Disable',
 				'label'       => 'Enable Rave',
 				'type'        => 'checkbox',
 				'description' => 'Enable Rave as a payment option on the checkout page.',
 				'default'     => 'no',
-				'desc_tip'    => true
+				'desc_tip'    => true,
 			),
-			'title' => array(
-				'title' 		=> 'Title',
-				'type' 			=> 'text',
-				'description' 	=> 'This controls the payment method title which the user sees during checkout.',
-    			'desc_tip'      => true,
-				'default' 		=> 'Rave'
+			'title'                 => array(
+				'title'       => 'Title',
+				'type'        => 'text',
+				'description' => 'This controls the payment method title which the user sees during checkout.',
+				'desc_tip'    => true,
+				'default'     => 'Rave',
 			),
-			'description' => array(
-				'title' 		=> 'Description',
-				'type' 			=> 'textarea',
-				'description' 	=> 'This controls the payment method description which the user sees during checkout.',
-    			'desc_tip'      => true,
-				'default' 		=> 'Make payment using your debit, credit card & bank account'
+			'description'           => array(
+				'title'       => 'Description',
+				'type'        => 'textarea',
+				'description' => 'This controls the payment method description which the user sees during checkout.',
+				'desc_tip'    => true,
+				'default'     => 'Make payment using your debit, credit card & bank account',
 			),
-			'testmode' => array(
+			'testmode'              => array(
 				'title'       => 'Test mode',
 				'label'       => 'Enable Test Mode',
 				'type'        => 'checkbox',
 				'description' => 'Test mode enables you to test payments before going live. <br />Once you are live uncheck this.',
 				'default'     => 'yes',
-				'desc_tip'    => true
+				'desc_tip'    => true,
 			),
-			'test_public_key' => array(
+			'test_public_key'       => array(
 				'title'       => 'Test Public Key',
 				'type'        => 'text',
 				'description' => 'Required: Enter your Test Public Key here.',
 				'default'     => '',
-    			'desc_tip'    => true,
+				'desc_tip'    => true,
 			),
-			'test_secret_key' => array(
+			'test_secret_key'       => array(
 				'title'       => 'Test Secret Key',
 				'type'        => 'text',
 				'description' => 'Required: Enter your Test Secret Key here',
 				'default'     => '',
-    			'desc_tip'    => true,
+				'desc_tip'    => true,
 			),
-			'live_public_key' => array(
+			'live_public_key'       => array(
 				'title'       => 'Live Public Key',
 				'type'        => 'text',
 				'description' => 'Required: Enter your Live Public Key here.',
 				'default'     => '',
-    			'desc_tip'    => true,
+				'desc_tip'    => true,
 			),
-			'live_secret_key' => array(
+			'live_secret_key'       => array(
 				'title'       => 'Live Secret Key',
 				'type'        => 'text',
 				'description' => 'Required: Enter your Live Secret Key here.',
 				'default'     => '',
-    			'desc_tip'    => true,
+				'desc_tip'    => true,
 			),
-			'payment_method' => array(
-				'title'       => 'Payment Method',
-				'type'        => 'select',
-				'description' => 'Set the payment option you want for your users.',
-				'default'     => 'both',
-    			'desc_tip'    => true,
-				'options' => array(
-					'both'          => 'Card, Account & USSD',
-					'card'          => 'Card Only',
-					'account'       => 'Account Only',
-					'ussd'          => 'USSD Only',
-					'noussd'        => 'No USSD',
-					'card_ussd'     => 'Card & USSD',
-					'account_ussd'  => 'Account & USSD'
-				)
+			'payment_method'        => array(
+				'title'             => 'Payment Methods',
+				'type'              => 'multiselect',
+				'class'             => 'wc-enhanced-select',
+				'description'       => 'Select the payment methods you want for your customers.',
+				'default'           => '',
+				'desc_tip'          => true,
+				'select_buttons'    => true,
+				'options'           => array(
+					'card'             => 'Card',
+					'account'          => 'Account',
+					'ussd'             => 'USSD',
+					'qr'               => 'QR',
+					'mpesa'            => 'M-Pesa',
+					'mobilemoneyghana' => 'Ghana Mobile Money',
+				),
+				'custom_attributes' => array(
+					'data-placeholder' => 'Select payment methods',
+				),
 			),
-			'custom_title' => array(
+			'custom_title'          => array(
 				'title'       => 'Custom Title',
 				'type'        => 'text',
 				'description' => 'Optional: Text to be displayed as the title of the payment modal.',
 				'default'     => '',
-    			'desc_tip'    => true,
+				'desc_tip'    => true,
 			),
-			'custom_desc' => array(
+			'custom_desc'           => array(
 				'title'       => 'Custom Description',
 				'type'        => 'text',
 				'description' => 'Optional: Text to be displayed as a short modal description.',
 				'default'     => '',
-    			'desc_tip'    => true,
+				'desc_tip'    => true,
 			),
-			'custom_logo' => array(
+			'custom_logo'           => array(
 				'title'       => 'Custom Logo',
 				'type'        => 'text',
 				'description' => 'Optional: Enter the link to a image to be displayed on the payment popup. Preferably a square image.',
 				'default'     => '',
-    			'desc_tip'    => true,
+				'desc_tip'    => true,
 			),
-			'saved_cards' 	  => array(
+			'saved_cards'           => array(
 				'title'       => 'Saved Cards',
 				'label'       => 'Enable Payment via Saved Cards',
 				'type'        => 'checkbox',
 				'description' => 'If enabled, users will be able to pay with a saved card during checkout. Card details are saved on Rave servers, not on your store.<br>Note that you need to have a valid SSL certificate installed.',
 				'default'     => 'no',
-				'desc_tip'    => true
-			)
+				'desc_tip'    => true,
+			),
 		);
+
 	}
 
 
@@ -390,6 +399,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 		} else {
 
 			wp_enqueue_script( 'tbz_rave', 'https://api.ravepay.co/flwv3-pug/getpaidx/api/flwpbf-inline.js', array( 'jquery' ), TBZ_WC_RAVE_VERSION, false );
+
 		}
 
 		wp_enqueue_script( 'tbz_wc_rave', plugins_url( 'assets/js/rave'. $suffix . '.js', TBZ_WC_RAVE_MAIN_FILE ), array( 'jquery', 'tbz_rave' ), TBZ_WC_RAVE_VERSION, false );
@@ -415,21 +425,37 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 			$base_location  = wc_get_base_location();
 			$country        = $base_location['country'];
 
+			$payment_methods = $this->payment_methods;
+
+			if ( empty( $payment_methods ) ) {
+				$payment_methods = '';
+			} else {
+				$payment_methods = implode( ',', $payment_methods );
+			}
+
+			$meta = array();
+
 			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
-				$rave_params['txref']  				= $txnref;
-				$rave_params['payment_method']  	= $this->payment_method;
-				$rave_params['amount']  			= $amount;
-				$rave_params['currency']  			= get_woocommerce_currency();
-				$rave_params['customer_email']  	= $email;
-				$rave_params['customer_phone']  	= $billing_phone;
-				$rave_params['customer_first_name']	= $first_name;
-				$rave_params['customer_last_name'] 	= $last_name;
-				$rave_params['custom_title'] 		= $this->custom_title;
-				$rave_params['custom_desc'] 		= $this->custom_desc;
-				$rave_params['custom_logo'] 		= $this->custom_logo;
-				$rave_params['country']  			= $country;
-				$rave_params['hash']  				= $this->generate_hash( $rave_params );
+				$meta[] = array(
+					'metaname'  => 'Order ID',
+					'metavalue' => $order_id,
+				);
+
+				$rave_params['txref']               = $txnref;
+				$rave_params['payment_options']     = $payment_methods;
+				$rave_params['amount']              = $amount;
+				$rave_params['currency']            = get_woocommerce_currency();
+				$rave_params['customer_email']      = $email;
+				$rave_params['customer_phone']      = $billing_phone;
+				$rave_params['customer_first_name'] = $first_name;
+				$rave_params['customer_last_name']  = $last_name;
+				$rave_params['custom_title']        = $this->custom_title;
+				$rave_params['custom_desc']         = $this->custom_desc;
+				$rave_params['custom_logo']         = $this->custom_logo;
+				$rave_params['country']             = $country;
+				$rave_params['meta']                = $meta;
+				$rave_params['hash']                = $this->generate_hash( $rave_params );
 
 				update_post_meta( $order_id, '_rave_txn_ref', $txnref );
 
@@ -449,7 +475,8 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 		$hashedPayload = $params['public_key'];
 
-	    unset( $params['public_key'] );
+		unset( $params['public_key'] );
+		unset( $params['meta'] );
 
 		ksort( $params );
 
@@ -482,6 +509,89 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 	}
 
+
+	/**
+	 * Displays the Rave fee
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param int $order_id
+	 */
+	public function display_rave_fee( $order_id ) {
+
+		$order = wc_get_order( $order_id );
+
+		if ( $this->is_wc_lt( '3.0' ) ) {
+			$fee      = get_post_meta( $order_id, '_rave_fee', true );
+			$currency = get_post_meta( $order_id, '_rave_currency', true );
+		} else {
+			$fee      = $order->get_meta( '_rave_fee', true );
+			$currency = $order->get_meta( '_rave_currency', true );
+		}
+
+		if ( ! $fee || ! $currency ) {
+			return;
+		}
+
+		?>
+
+		<tr>
+			<td class="label rave-fee">
+				<?php echo wc_help_tip( 'This represents the fee Rave collects for the transaction.' ); ?>
+				<?php esc_html_e( 'Rave Fee:' ); ?>
+			</td>
+			<td width="1%"></td>
+			<td class="total">
+				-&nbsp;<?php echo wc_price( $fee, array( 'currency' => $currency ) ); ?>
+			</td>
+		</tr>
+
+		<?php
+	}
+
+
+	/**
+	 * Displays the net total of the transaction without the charges of Rave.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param int $order_id
+	 */
+	public function display_order_payout( $order_id ) {
+
+		$order = wc_get_order( $order_id );
+
+		if ( $this->is_wc_lt( '3.0' ) ) {
+			$net      = get_post_meta( $order_id, '_rave_net', true );
+			$currency = get_post_meta( $order_id, '_rave_currency', true );
+		} else {
+			$net      = $order->get_meta( '_rave_net', true );
+			$currency = $order->get_meta( '_rave_currency', true );
+		}
+
+		if ( ! $net || ! $currency ) {
+			return;
+		}
+
+		?>
+
+		<tr>
+			<td class="label rave-payout">
+				<?php $message = 'This represents the net total that will be credited to your bank account for this order.'; ?>
+				<?php if ( $net >= $order->get_total() ): ?>
+					<?php $message .= ' Rave transaction fees was passed to the customer.'; ?>
+				<?php endif;?>
+				<?php echo wc_help_tip( $message ); ?>
+				<?php esc_html_e( 'Rave Payout:' ); ?>
+			</td>
+			<td width="1%"></td>
+			<td class="total">
+				<?php echo wc_price( $net, array( 'currency' => $currency ) ); ?>
+			</td>
+		</tr>
+
+		<?php
+	}
 
 	/**
 	 * Process the payment
@@ -535,7 +645,6 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	}
 
 
-
 	/**
 	 * Process a token payment
 	 */
@@ -551,8 +660,9 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 			$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 
-			$first_name  	  = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
-			$last_name  	  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
+			$first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
+			$last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
+			$email      = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
 
 			$ip_address       = $order->get_customer_ip_address();
 
@@ -560,21 +670,29 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 				'Content-Type'	=> 'application/json'
 			);
 
-			$payment_token = explode( '##', $token );
-
-			$token_code    = $payment_token[0];
-			$token_email   = $payment_token[1];
+			if ( strpos( $token, '##' ) !== false ) {
+				$payment_token = explode( '##', $token );
+				$token_code    = $payment_token[0];
+			} else {
+				$token_code = $token;
+			}
 
 			$body = array(
-				'SECKEY' 	=> $this->secret_key,
-				'token'		=> $token_code,
-				'currency'	=> $order_currency,
-				'amount'	=> $order_amount,
-				'email'		=> $token_email,
+				'SECKEY'    => $this->secret_key,
+				'token'     => $token_code,
+				'currency'  => $order_currency,
+				'amount'    => $order_amount,
+				'email'     => $email,
 				'firstname' => $first_name,
 				'lastname'  => $last_name,
-				'IP'		=> $ip_address,
-				'txRef'		=> $txnref,
+				'IP'        => $ip_address,
+				'txRef'     => $txnref,
+				'meta'      => array(
+					array(
+						'metaname'  => 'Order ID',
+						'metavalue' => $order_id,
+					),
+				),
 			);
 
 			$args = array(
@@ -584,8 +702,6 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 			);
 
 			$request  = wp_remote_post( $this->tokenized_url, $args );
-
-        	$response = json_decode( wp_remote_retrieve_body( $request ) );
 
 	        if ( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
 
@@ -621,6 +737,21 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 	        		$txn_ref 		= $response->data->txRef;
 	        		$payment_ref 	= $response->data->flwRef;
+
+					$amount_charged = $response->data->charged_amount;
+
+					$rave_fee       = $response->data->appfee;
+					$rave_net       = $amount_charged - $rave_fee;
+
+					if ( $this->is_wc_lt( '3.0' ) ) {
+						update_post_meta( $order_id, '_rave_fee', $rave_fee );
+						update_post_meta( $order_id, '_rave_net', $rave_net );
+						update_post_meta( $order_id, '_rave_currency', $payment_currency );
+					} else {
+						$order->update_meta_data( '_rave_fee', $rave_fee );
+						$order->update_meta_data( '_rave_net', $rave_net );
+						$order->update_meta_data( '_rave_currency', $payment_currency );
+					}
 
 					// check if the amount paid is equal to the order amount.
 					if ( $amount_paid < $order_total ) {
@@ -673,7 +804,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 					}
 
-					$this->save_subscription_payment_token( $order_id, $token_code, $token_email );
+					$this->save_subscription_payment_token( $order_id, $token_code );
 
 					wc_empty_cart();
 
@@ -692,8 +823,6 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 				}
 
 	        } else {
-
-        		$response = json_decode( wp_remote_retrieve_body( $request ) );
 
 				wc_add_notice( 'Payment failed using the saved card. Kindly use another payment method.', 'error' );
 
@@ -766,7 +895,6 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 			$request = wp_remote_post( $rave_verify_url, $args );
 
-
 	        if ( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
 
             	$response               = json_decode( wp_remote_retrieve_body( $request ) );
@@ -779,11 +907,11 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
         		$gateway_symbol         = get_woocommerce_currency_symbol( $payment_currency );
 
-            	$valid_response_code	= array( '0', '00');
+            	$valid_response_code	= array( '0', '00' );
+
+		        $order_details 	        = explode( '|', $response->data->tx_ref );
 
 				if ( 'success' === $status && in_array( $response_code, $valid_response_code ) ) {
-
-					$order_details 	= explode( '|', $response->data->tx_ref );
 
 					$order_id 		= (int) $order_details[1];
 
@@ -808,7 +936,20 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	        		$txn_ref 		= $response->data->tx_ref;
 	        		$payment_ref 	= $response->data->flw_ref;
 
-					$billing_email  = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+	        		$amount_charged = $response->data->charged_amount;
+
+					$rave_fee       = $response->data->appfee;
+					$rave_net       = $amount_charged - $rave_fee;
+
+					if ( $this->is_wc_lt( '3.0' ) ) {
+						update_post_meta( $order_id, '_rave_fee', $rave_fee );
+						update_post_meta( $order_id, '_rave_net', $rave_net );
+						update_post_meta( $order_id, '_rave_currency', $payment_currency );
+					} else {
+						$order->update_meta_data( '_rave_fee', $rave_fee );
+						$order->update_meta_data( '_rave_net', $rave_net );
+						$order->update_meta_data( '_rave_currency', $payment_currency );
+					}
 
 					// check if the amount paid is equal to the order amount.
 					if ( $amount_paid < $order_total ) {
@@ -861,7 +1002,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 					}
 
-					$this->save_card_details( $response, $order->get_user_id(), $order_id, $billing_email );
+					$this->save_card_details( $response, $order->get_user_id(), $order_id );
 
 					wc_empty_cart();
 
@@ -900,11 +1041,14 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 			exit;
 		}
 
+		sleep(10);
+		
 		$body = @file_get_contents( "php://input" );
 
 		if ( $this->isJSON( $body ) ) {
 			$_POST = (array) json_decode( $body );
 		}
+
 		if ( ! isset( $_POST['flwRef'] ) ) {
 			exit;
 		}
@@ -974,6 +1118,21 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
         		$txn_ref 		= $response->data->tx_ref;
         		$payment_ref 	= $response->data->flw_ref;
 
+				$amount_charged = $response->data->charged_amount;
+
+				$rave_fee       = $response->data->appfee;
+				$rave_net       = $amount_charged - $rave_fee;
+
+				if ( $this->is_wc_lt( '3.0' ) ) {
+					update_post_meta( $order_id, '_rave_fee', $rave_fee );
+					update_post_meta( $order_id, '_rave_net', $rave_net );
+					update_post_meta( $order_id, '_rave_currency', $payment_currency );
+				} else {
+					$order->update_meta_data( '_rave_fee', $rave_fee );
+					$order->update_meta_data( '_rave_net', $rave_net );
+					$order->update_meta_data( '_rave_currency', $payment_currency );
+				}
+
 				// check if the amount paid is equal to the order amount.
 				if ( $amount_paid < $order_total ) {
 
@@ -982,7 +1141,6 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 					update_post_meta( $order_id, '_transaction_id', $txn_ref );
 
 					$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
-					$notice_type = 'notice';
 
 					// Add Customer Order Note
                     $order->add_order_note( $notice, 1 );
@@ -1001,7 +1159,6 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 						update_post_meta( $order_id, '_transaction_id', $txn_ref );
 
 						$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the payment currency is different from the order currency.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
-						$notice_type = 'notice';
 
 						// Add Customer Order Note
 	                    $order->add_order_note( $notice, 1 );
@@ -1010,8 +1167,6 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . ' ('. $currency_symbol . ')</strong> while the payment currency is <strong>'. $payment_currency . ' ('. $gateway_symbol . ')</strong><br /><strong>Transaction Reference:</strong> ' . $txn_ref . ' | <strong>Payment Reference:</strong> ' . $payment_ref );
 
 						wc_reduce_stock_levels( $order_id );
-
-						wc_add_notice( $notice, $notice_type );
 
 					} else {
 
@@ -1022,6 +1177,8 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 					}
 
 				}
+
+				$this->save_card_details( $response, $order->get_user_id(), $order_id );
 
 				wc_empty_cart();
 
@@ -1046,21 +1203,21 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	/**
 	 * Save Customer Card Details
 	 */
-	public function save_card_details( $rave_response, $user_id, $order_id, $billing_email ) {
+	public function save_card_details( $rave_response, $user_id, $order_id ) {
 
-		if( isset( $rave_response->data->card->life_time_token ) ) {
-			$token_code = $rave_response->data->card->life_time_token;
+		if ( isset( $rave_response->data->card->card_tokens[0]->embedtoken ) ) {
+			$token_code = $rave_response->data->card->card_tokens[0]->embedtoken;
 		} else {
 			$token_code = '';
 		}
 
-		$this->save_subscription_payment_token( $order_id, $token_code, $billing_email );
+		$this->save_subscription_payment_token( $order_id, $token_code );
 
 		$save_card = get_post_meta( $order_id, '_wc_rave_save_card', true );
 
-		if ( isset( $rave_response->data->card ) && $user_id && $this->saved_cards && $save_card && ! empty( $rave_response->data->card->life_time_token ) ) {
+		if ( isset( $rave_response->data->card ) && $user_id && $this->saved_cards && $save_card && ! empty( $token_code ) ) {
 
-			$last4 		= $rave_response->data->card->last4digits;
+			$last4 = $rave_response->data->card->last4digits;
 
 			if ( 4 !== strlen( $rave_response->data->card->expiryyear ) ) {
 				$exp_year 	= substr( date( 'Y' ), 0, 2 ) . $rave_response->data->card->expiryyear;
@@ -1070,12 +1227,9 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 			$brand 		= $rave_response->data->card->brand;
 			$exp_month 	= $rave_response->data->card->expirymonth;
-			$auth_code 	= $rave_response->data->card->life_time_token;
-
-			$payment_token = $auth_code . '##' . $billing_email;
 
 			$token = new WC_Payment_Token_CC();
-			$token->set_token( $payment_token );
+			$token->set_token( $token_code );
 			$token->set_gateway_id( 'tbz_rave' );
 			$token->set_card_type( $brand );
 			$token->set_last4( $last4 );
@@ -1094,7 +1248,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	/**
 	 * Save payment token to the order for automatic renewal for further subscription payment
 	 */
-	public function save_subscription_payment_token( $order_id, $token_code, $billing_email ) {
+	public function save_subscription_payment_token( $order_id, $payment_token ) {
 
 		if ( ! function_exists ( 'wcs_order_contains_subscription' ) ) {
 
@@ -1102,9 +1256,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 		}
 
-		if ( $this->order_contains_subscription( $order_id ) && ! empty( $token_code ) ) {
-
-			$payment_token = $token_code . '##' . $billing_email;
+		if ( $this->order_contains_subscription( $order_id ) && ! empty( $payment_token ) ) {
 
 			// Also store it on the subscriptions being purchased or paid for in the order
 			if ( function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id ) ) {
@@ -1135,6 +1287,17 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 	public function isJSON( $string ) {
    		return is_string($string) && is_array( json_decode( $string, true ) ) ? true : false;
+	}
+
+	/**
+	 * Checks if WC version is less than passed in version.
+	 *
+	 * @since 2.1.0
+	 * @param string $version Version to check against.
+	 * @return bool
+	 */
+	public function is_wc_lt( $version ) {
+		return version_compare( WC_VERSION, $version, '<' );
 	}
 
 }

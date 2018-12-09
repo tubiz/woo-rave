@@ -3,13 +3,13 @@
 	Plugin Name:			WooCommerce Rave Payment Gateway
 	Plugin URI: 			https://rave.flutterwave.com
 	Description:            WooCommerce payment gateway for Rave by Flutterwave
-	Version:                2.0.0
+	Version:                2.1.0
 	Author: 				Tunbosun Ayinla
 	Author URI: 			https://bosun.me
 	License:        		GPL-2.0+
 	License URI:    		http://www.gnu.org/licenses/gpl-2.0.txt
 	WC requires at least:   3.0.0
-	WC tested up to:        3.4.0
+	WC tested up to:        3.5.0
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,7 +20,7 @@ define( 'TBZ_WC_RAVE_MAIN_FILE', __FILE__ );
 
 define( 'TBZ_WC_RAVE_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
-define( 'TBZ_WC_RAVE_VERSION', '2.0.0' );
+define( 'TBZ_WC_RAVE_VERSION', '2.1.0' );
 
 function tbz_wc_rave_init() {
 
@@ -88,7 +88,7 @@ function tbz_wc_rave_testmode_notice(){
 	if ( 'yes' == $test_mode ) {
     ?>
 	    <div class="update-nag">
-	        Rave testmode is still enabled, Click <a href="<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=wc-settings&tab=checkout&section=tbz_rave">here</a> to disable it when you want to start accepting live payment on your site.
+	        Rave testmode is still enabled, Click <a href="<?php echo admin_url( 'admin.php?page=wc-settings&tab=checkout&section=tbz_rave' ) ?>">here</a> to disable it when you want to start accepting live payment on your site.
 	    </div>
     <?php
 	}

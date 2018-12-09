@@ -50,8 +50,9 @@ jQuery( function( $ ) {
             customer_phone: tbz_wc_rave_params.customer_phone,
             country: tbz_wc_rave_params.country,
             currency: tbz_wc_rave_params.currency,
-            payment_method: tbz_wc_rave_params.payment_method,
-            txref: tbz_wc_rave_params.txref,
+	        payment_options: tbz_wc_rave_params.payment_options,
+	        txref: tbz_wc_rave_params.txref,
+	        meta: tbz_wc_rave_params.meta,
             integrity_hash: tbz_wc_rave_params.hash,
             onClose: function() {
                 $( this.el ).unblock();
