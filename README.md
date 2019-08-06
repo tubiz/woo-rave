@@ -12,9 +12,9 @@
 
 **Requires PHP:** 5.6
 
-**Tested up to:** 5.0
+**Tested up to:** 5.2
 
-**Stable tag:** 2.1.0
+**Stable tag:** 2.2.0
 
 **License:** GPLv2 or later
 
@@ -147,6 +147,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 2.2.0 (August 6, 2019) ###
+*   Bug fixes
+*   Update: WC 3.7 compatibility
+
 ### 2.1.0 (December 9, 2018) =
 *   New: Display Rave fee and Rave payout amount on the order details page
 *   Fix: Saved cards not working
@@ -169,9 +173,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 2.1.0 =
-*   Version 2.1.0 fix an issue with saved cards not working. The Rave fee and Rave payout amount are now displayed on the order details page.
-
+### 2.2.0 =
+* Bug fixes.
 
 ## Screenshots
 
