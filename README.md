@@ -14,7 +14,7 @@
 
 **Tested up to:** 5.2
 
-**Stable tag:** 2.2.0
+**Stable tag:** 2.2.1
 
 **License:** GPLv2 or later
 
@@ -147,23 +147,26 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
-### 2.2.0 (August 6, 2019) ###
+### 2.2.1 (September 5, 2019)
+*   New: Add support for Zambian kwacha (ZMW)
+
+### 2.2.0 (August 6, 2019)
 *   Bug fixes
 *   Update: WC 3.7 compatibility
 
-### 2.1.0 (December 9, 2018) =
+### 2.1.0 (December 9, 2018)
 *   New: Display Rave fee and Rave payout amount on the order details page
 *   Fix: Saved cards not working
 *   Misc: Add support for WooCommerce 3.5
 
-### 2.0.0 (June 03, 2018) =
+### 2.0.0 (June 03, 2018)
 * 	New: Saved cards - allow store customers to save their card details and pay again using the same card. Card details are saved on Rave servers and not on your store.
 * 	New: Add support for recurring payment using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin.
 
-### 1.0.1 (May 08, 2018) =
+### 1.0.1 (May 08, 2018)
 *   Fix: Bad integrity hash if & is used in the custom title or custom description text
 
-### 1.0.0 (March 26, 2018) =
+### 1.0.0 (March 26, 2018)
 *   First release
 
 
@@ -173,8 +176,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 2.2.0 =
-* Bug fixes.
+### 2.2.1
+*   Add support for Zambian kwacha (ZMW)
 
 ## Screenshots
 
