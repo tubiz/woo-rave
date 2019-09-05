@@ -209,8 +209,8 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 		$message = '';
 
-		$valid_countries  = array( 'NG', 'GH', 'KE', 'ZA' );
-		$valid_currencies = array( 'NGN', 'USD', 'EUR', 'GBP', 'KES', 'GHS', 'ZAR' );
+		$valid_countries  = array( 'NG', 'GH', 'KE', 'ZA', 'ZM' );
+		$valid_currencies = array( 'NGN', 'USD', 'EUR', 'GBP', 'KES', 'GHS', 'ZAR', 'ZMW' );
 
 		$base_location = wc_get_base_location();
 
@@ -232,7 +232,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 		if ( ! in_array( $base_location['country'], $valid_countries ) ) {
 
-			$message .= 'Rave does not support your store country. You need to set it to either Nigeria, Ghana, Kenya or South Africa <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
+			$message .= 'Rave does not support your store country. You need to set it to either Nigeria, Ghana, Kenya, South Africa or Zambia <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
 
 			$valid = false;
 
