@@ -192,58 +192,6 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 		// Webhook listener/API hook.
 		add_action( 'woocommerce_api_tbz_wc_rave_webhook', array( $this, 'process_webhooks' ) );
-
-		// Check if the gateway can be used.
-		if ( ! $this->is_valid_for_use() ) {
-			$this->enabled = false;
-		}
-
-	}
-
-	/**
-	 * Check if this gateway is enabled and available in the user's country.
-	 */
-	public function is_valid_for_use() {
-
-		$valid = true;
-
-		$message = '';
-
-		$valid_countries  = array( 'NG', 'GH', 'KE', 'ZA', 'ZM' );
-		$valid_currencies = array( 'NGN', 'USD', 'EUR', 'GBP', 'KES', 'GHS', 'ZAR', 'ZMW' );
-
-		$base_location = wc_get_base_location();
-
-		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_rave_supported_currencies', $valid_currencies ) ) ) {
-
-			$currencies = '';
-
-			foreach ( $valid_currencies as $currency ) {
-				$currencies .= $currency . ' (' . get_woocommerce_currency_symbol( $currency ) . '), ';
-			}
-
-			$currencies = rtrim( $currencies, ', ' );
-
-			$message .= 'Rave does not support your store currency. Kindly set it to either ' . $currencies . ' <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a><br>';
-
-			$valid = false;
-
-		}
-
-		if ( ! in_array( $base_location['country'], $valid_countries ) ) {
-
-			$message .= 'Rave does not support your store country. You need to set it to either Nigeria, Ghana, Kenya, South Africa or Zambia <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
-
-			$valid = false;
-
-		}
-
-		if ( ! $valid ) {
-			$this->msg = $message;
-		}
-
-		return $valid;
-
 	}
 
 	/**
@@ -491,6 +439,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 			$base_location = wc_get_base_location();
 			$country       = $base_location['country'];
+			$currency      = get_woocommerce_currency();
 
 			$meta = array();
 
@@ -511,7 +460,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 				$rave_params['custom_title']        = $this->custom_title;
 				$rave_params['custom_desc']         = $this->custom_desc;
 				$rave_params['custom_logo']         = $this->custom_logo;
-				$rave_params['country']             = $country;
+				$rave_params['country']             = $this->get_route_country( $currency, $country );
 				$rave_params['meta']                = $meta;
 				$rave_params['hash']                = $this->generate_hash( $rave_params );
 
@@ -547,6 +496,58 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 		$hash = hash( 'sha256', $hashed_payload );
 
 		return $hash;
+	}
+
+	/**
+	 * Get route country.
+	 *
+	 * @param string $currency     WooCommerce Store Currency Code
+	 * @param string $country_code WooCommerce Store Country Code
+	 *
+	 * @return string Country code.
+	 */
+	public function get_route_country( $currency, $country_code ) {
+
+		switch ( $currency ) {
+
+			case 'NGN':
+				$route_country = 'NG';
+				break;
+
+			case 'GHS':
+				$route_country = 'GH';
+				break;
+
+			case 'KES':
+				$route_country = 'KE';
+				break;
+
+			case 'RWF':
+				$route_country = 'RW';
+				break;
+
+			case 'TZS':
+				$route_country = 'TZ';
+				break;
+
+			case 'UGX':
+				$route_country = 'UG';
+				break;
+
+			case 'ZAR':
+				$route_country = 'ZA';
+				break;
+
+			case 'ZMW':
+				$route_country = 'ZM';
+				break;
+
+			default:
+				$route_country = $country_code;
+				break;
+		}
+
+		return $route_country;
 	}
 
 	/**
