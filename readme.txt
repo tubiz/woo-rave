@@ -4,8 +4,8 @@ Donate link: https://bosun.me/donate
 Tags: woocommerce, rave, flutterwave, payment gateway, payment gateways, mastercard, visa cards, verve cards, tubiz plugins, verve, nigeria, ghana, kenya, south africa, mpesa
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 5.2
-Stable tag: 2.2.1
+Tested up to: 5.3
+Stable tag: 2.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -126,6 +126,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 2.2.2 (November 13, 2019) =
+*   Update: WooCommerce 3.8 compatibility
+
 = 2.2.1 (September 5, 2019) =
 *   New: Add support for Zambian kwacha (ZMW)
 
@@ -154,8 +157,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 2.2.1 =
-*   Add support for Zambian kwacha (ZMW)
+= 2.2.2 =
+*   WooCommerce 3.8 compatibility
 
 
 

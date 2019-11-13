@@ -147,6 +147,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 2.2.2 (November 13, 2019) 
+*   Update: WooCommerce 3.8 compatibility
+
 ### 2.2.1 (September 5, 2019)
 *   New: Add support for Zambian kwacha (ZMW)
 
@@ -176,8 +179,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 2.2.1
-*   Add support for Zambian kwacha (ZMW)
+### 2.2.2
+*   WooCommerce 3.8 compatibility
 
 ## Screenshots
 
