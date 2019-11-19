@@ -256,18 +256,9 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 		<?php
 
-		if ( $this->is_valid_for_use() ) {
-
-			echo '<table class="form-table">';
-			$this->generate_settings_html();
-			echo '</table>';
-
-		} else {
-			?>
-			<div class="inline error"><p><strong>Rave Payment Gateway Disabled</strong>: <?php echo $this->msg; ?></p></div>
-
-			<?php
-		}
+		echo '<table class="form-table">';
+		$this->generate_settings_html();
+		echo '</table>';
 
 	}
 
