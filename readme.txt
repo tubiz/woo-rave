@@ -5,7 +5,7 @@ Tags: woocommerce, rave, flutterwave, payment gateway, payment gateways, masterc
 Requires at least: 4.7
 Requires PHP: 5.6
 Tested up to: 5.3
-Stable tag: 2.2.2
+Stable tag: 2.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -126,6 +126,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 2.2.3 (November 19, 2019) =
+*   Fix: Fatal error on settings page
+
 = 2.2.2 (November 13, 2019) =
 *   Update: WooCommerce 3.8 compatibility
 
@@ -157,8 +160,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 2.2.2 =
-*   WooCommerce 3.8 compatibility
+= 2.2.3 =
+*   Fix: Fatal error on settings page
 
 
 
