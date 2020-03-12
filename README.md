@@ -12,9 +12,9 @@
 
 **Requires PHP:** 5.6
 
-**Tested up to:** 5.3
+**Tested up to:** 5.4
 
-**Stable tag:** 2.2.3
+**Stable tag:** 2.2.4
 
 **License:** GPLv2 or later
 
@@ -147,6 +147,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 2.2.4 (March 12, 2020) 
+*   Fix: WooCommerce 4.0 compatibility
+
 ### 2.2.3 (November 19, 2019) 
 *   Fix: Fatal error on settings page
 
@@ -182,8 +185,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 2.2.3
-*   Fix: Fatal error on settings page
+### 2.2.4
+*   WooCommerce 4.0 compatibility
 
 ## Screenshots
 
