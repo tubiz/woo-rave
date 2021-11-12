@@ -6,6 +6,8 @@
 	Version:                2.2.4
 	Author: 				Tunbosun Ayinla
 	Author URI: 			https://bosun.me
+	GitHub Plugin URI: 		alexasomba/woo-rave
+	GitHub Plugin URI: 		https://github.com/alexasomba/woo-rave
 	License:        		GPL-2.0+
 	License URI:    		http://www.gnu.org/licenses/gpl-2.0.txt
 	WC requires at least:   3.0.0
