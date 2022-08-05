@@ -385,7 +385,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	 */
 	public function payment_scripts() {
 
-		if ( ! is_checkout_pay_page() ) {
+		if ( ! is_checkout_pay_page() && is_wc_endpoint_url( 'order-pay' )) {
 			return;
 		}
 
@@ -507,6 +507,50 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 
 			case 'GHS':
 				$route_country = 'GH';
+				break;
+				
+			case 'GBP':
+				$route_country = 'GB';
+				break;
+
+			case 'XAF':
+				$route_country = in_array(array('CM','CF','TD','CG','GQ','GA','MU'), $country_code);
+				break;
+
+			case 'XOF':
+				$route_country = in_array(array('BJ','BF','GW','ML','NE','SN','TG'), $country_code);
+				break;
+
+			case 'EUR':
+				$route_country = in_array(array("AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE"), $country_code);
+				break;
+
+			case 'CAD':
+				$route_country = 'CA';
+				break;
+
+			case 'CLP':
+				$route_country = 'CL';
+				break;
+
+			case 'COP':
+				$route_country = 'CO';
+				break;
+
+			case 'GNF':
+				$route_country = 'GN';
+				break;
+
+			case 'EGP':
+				$route_country = 'EG';
+				break;
+
+			case 'SLL':
+				$route_country = 'SL';
+				break;
+
+			case 'STD':
+				$route_country = 'ST';
 				break;
 
 			case 'KES':

@@ -45,7 +45,7 @@ With this WooCommerce Rave Payment Gateway plugin, you will be able to accept th
 = Note =
 
 *	You will need to set your store country to either Nigeria, Kenya, Ghana or South Africa in the General tab on the WooCommerce settings page
-*	Currencies supported by Rave: NGN, USD, EUR, GBP, KES, GHS, ZAR
+*	Currencies supported by Rave: NGN, USD, EUR, GBP, CLP, COP, KES, GHS, XAF, XAF, UGX, ZMW, ZAR
 
 
 
