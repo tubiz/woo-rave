@@ -385,7 +385,7 @@ class Tbz_WC_Rave_Gateway extends WC_Payment_Gateway {
 	 */
 	public function payment_scripts() {
 
-		if ( ! is_checkout_pay_page() && is_wc_endpoint_url( 'order-pay' )) {
+		if ( ! is_checkout_pay_page()) {
 			return;
 		}
 
