@@ -34,6 +34,7 @@ jQuery(
 			let flutterwave_callback = function( response ) {
 
 				$form.append( '<input type="hidden" class="tbz_wc_flutterwave_txnref" name="tbz_wc_flutterwave_txnref" value="' + response.transaction_id + '"/>' );
+				$form.append( '<input type="hidden" class="tbz_wc_flutterwave_order_txnref" name="tbz_wc_flutterwave_order_txnref" value="' + response.tx_ref + '"/>' );
 
 				flutterwave_submit = true;
 
