@@ -822,20 +822,24 @@ class WC_Gateway_Flutterwave extends \WC_Payment_Gateway {
 	 */
 	public function verify_flutterwave_transaction() {
 
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		@ob_clean();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_REQUEST['tbz_wc_flutterwave_txnref'] ) ) {
 
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$txn_id = sanitize_text_field( $_REQUEST['tbz_wc_flutterwave_txnref'] );
 
 			$flutterwave_txn = $this->verify_transaction( $txn_id );
 
-			$status           = $flutterwave_txn->data->status;
-			$payment_currency = $flutterwave_txn->data->currency;
-			$gateway_symbol   = get_woocommerce_currency_symbol( $payment_currency );
-			$order_details    = explode( '|', $flutterwave_txn->data->tx_ref );
+			$status = $flutterwave_txn->data->status ?? 'failed';
 
 			if ( 'successful' === $status ) {
+
+				$payment_currency = $flutterwave_txn->data->currency;
+				$gateway_symbol   = get_woocommerce_currency_symbol( $payment_currency );
+				$order_details    = explode( '|', $flutterwave_txn->data->tx_ref );
 
 				$order_id = (int) $order_details[1];
 
@@ -925,19 +929,28 @@ class WC_Gateway_Flutterwave extends \WC_Payment_Gateway {
 
 				wc_empty_cart();
 
+				wp_redirect( $this->get_return_url( $order ) );
+
+				exit;
+
 			} else {
 
-				$order_id = (int) $order_details[1];
+				// phpcs:ignore  WordPress.Security.NonceVerification.Recommended
+				$order_txn_ref = sanitize_text_field( $_REQUEST['tbz_wc_flutterwave_order_txnref'] );
+				$order_details = explode( '|', $order_txn_ref );
+				$order_id      = (int) $order_details[1];
+				$order         = wc_get_order( $order_id );
 
-				$order = wc_get_order( $order_id );
+				if ( $order ) {
+					$order->add_order_note( sprintf( 'Unable to retrieve transaction details from Flutterwave. This could be due to invalid Flutterwave API keys on the settings page. <strong>Transaction ID:</strong> %s', $order_txn_ref ) );
+				}
 
-				$order->update_status( 'failed', 'Payment was declined by Flutterwave.' );
+				wc_add_notice( 'Unable to retrieve transaction details from Flutterwave. If debited contact website owner.', 'error' );
 
+				wp_redirect( wc_get_page_permalink( 'checkout' ) );
+
+				exit;
 			}
-
-			wp_redirect( $this->get_return_url( $order ) );
-
-			exit;
 		}
 
 		wc_add_notice( 'Payment failed. Try again.', 'error' );
@@ -981,7 +994,7 @@ class WC_Gateway_Flutterwave extends \WC_Payment_Gateway {
 
 		$flutterwave_txn = $this->verify_transaction( $transaction_id );
 
-		if ( ! isset( $flutterwave_txn->status ) ) {
+		if ( ! isset( $flutterwave_txn->data->status ) ) {
 			return;
 		}
 
