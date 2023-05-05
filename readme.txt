@@ -2,7 +2,7 @@
 Contributors: tubiz
 Donate link: https://bosun.me/donate
 Tags: woocommerce, rave, flutterwave, payment gateway, payment gateways, mastercard, visa cards, verve cards, tubiz plugins, verve, nigeria, ghana, kenya, south africa, mpesa
-Requires at least: 4.7
+Requires at least: 5.6
 Requires PHP: 7.4
 Tested up to: 6.2
 Stable tag: 2.3
