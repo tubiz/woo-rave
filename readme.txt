@@ -128,9 +128,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left-hand me
 
 == Changelog ==
 
-= 2.3 (May 4, 2023) =
+= 2.3 (May 5, 2023) =
 *   Update: WordPress 6.2 compatibility
-*   Update: WooCommerce 7.5 compatibility
+*   Update: WooCommerce 7.6 compatibility
 *   New: Use Flutterwave V3 API
 *   New: Add support for version 3 Webhooks
 
@@ -175,7 +175,7 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left-hand me
 == Upgrade Notice ==
 
 = 2.3 =
-*   WordPress 6.2 compatibility. WooCommerce 7.5 compatibility. Use Flutterwave V3 API. Add support for version 3 Webhooks.
+*   WordPress 6.2 compatibility. WooCommerce 7.6 compatibility. Upgrade to Flutterwave version 3 API. Add support for version 3 webhooks.
 
 
 == Screenshots ==
