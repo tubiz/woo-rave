@@ -60,6 +60,7 @@ jQuery(
 					tx_ref: tbz_wc_flutterwave_params.txref,
 					amount: tbz_wc_flutterwave_params.amount,
 					currency: tbz_wc_flutterwave_params.currency,
+					country: tbz_wc_flutterwave_params.country,
 					meta: tbz_wc_flutterwave_params.meta,
 					customer: {
 						email: tbz_wc_flutterwave_params.customer_email,

@@ -5,7 +5,7 @@ Tags: woocommerce, rave, flutterwave, payment gateway, payment gateways, masterc
 Requires at least: 5.6
 Requires PHP: 7.4
 Tested up to: 6.2
-Stable tag: 2.3
+Stable tag: 2.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -128,6 +128,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left-hand me
 
 == Changelog ==
 
+= 2.3.1 (May 7, 2023) =
+*   Fix: Fix not supported charge currency error
+
 = 2.3 (May 5, 2023) =
 *   Update: WordPress 6.2 compatibility
 *   Update: WooCommerce 7.6 compatibility
@@ -174,8 +177,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left-hand me
 
 == Upgrade Notice ==
 
-= 2.3 =
-*   WordPress 6.2 compatibility. WooCommerce 7.6 compatibility. Upgrade to Flutterwave version 3 API. Add support for version 3 webhooks.
+= 2.3.1 =
+*   Fix not supported charge currency error
 
 
 == Screenshots ==
