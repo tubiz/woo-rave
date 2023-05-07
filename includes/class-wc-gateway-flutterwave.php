@@ -455,9 +455,12 @@ class WC_Gateway_Flutterwave extends \WC_Payment_Gateway {
 
 				$customer_name = trim( "$first_name $last_name" );
 
+				$location = wc_get_base_location();
+
 				$flutterwave_params['txref']          = $txnref;
 				$flutterwave_params['amount']         = $amount;
 				$flutterwave_params['currency']       = $currency;
+				$flutterwave_params['country']        = $location['country'];
 				$flutterwave_params['customer_email'] = $email;
 				$flutterwave_params['customer_phone'] = $billing_phone;
 				$flutterwave_params['customer_name']  = $customer_name;
