@@ -2,10 +2,10 @@
 Contributors: tubiz
 Donate link: https://bosun.me/donate
 Tags: woocommerce, rave, flutterwave, payment gateway, payment gateways, mastercard, visa cards, verve cards, tubiz plugins, verve, nigeria, ghana, kenya, south africa, mpesa
-Requires at least: 5.6
+Requires at least: 5.8
 Requires PHP: 7.4
-Tested up to: 6.2
-Stable tag: 2.3.1
+Tested up to: 6.4
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -128,6 +128,11 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left-hand me
 
 == Changelog ==
 
+= 2.4.0 (February 17, 2024) =
+*   New: Add support for WooCommerce checkout block
+*   Tweak: Declare compatibility for High Performance Order Storage (HPOS)
+*   Update: WooCommerce 8.6 compatibility
+
 = 2.3.1 (May 7, 2023) =
 *   Fix: Fix not supported charge currency error
 
@@ -177,8 +182,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left-hand me
 
 == Upgrade Notice ==
 
-= 2.3.1 =
-*   Fix not supported charge currency error
+= 2.4.0 =
+*   Add support for WooCommerce Checkout Block. Declare compatibility for High Performance Order Storage (HPOS).
 
 
 == Screenshots ==
