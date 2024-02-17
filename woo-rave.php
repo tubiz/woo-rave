@@ -91,3 +91,19 @@ function tbz_wc_flutterwave_testmode_notice() {
 	}
 }
 add_action( 'admin_notices', 'tbz_wc_flutterwave_testmode_notice' );
+
+/**
+ * Registers WooCommerce Blocks integration.
+ */
+function tbz_wc_flutterwave_gateway_woocommerce_block_support() {
+	if ( class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+		require_once 'includes/blocks/class-wc-gateway-flutterwave-blocks-support.php';
+		add_action(
+			'woocommerce_blocks_payment_method_type_registration',
+			static function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+				$payment_method_registry->register( new \Tubiz\Flutterwave_Woocommerce\WC_Gateway_Flutterwave_Blocks_Support() );
+			}
+		);
+	}
+}
+add_action( 'woocommerce_blocks_loaded', 'tbz_wc_flutterwave_gateway_woocommerce_block_support' );
