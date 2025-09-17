@@ -1,6 +1,6 @@
 {
 	"name": "woo-rave",
-	"title": "WooCommerce Flutterwave Payment Gateway",
+	"title": "Flutterwave Payment Gateway for WooCommerce",
 	"version": "2.4.1",
 	"author": "Tunbosun Ayinla",
 	"license": "GPL-3.0+",
