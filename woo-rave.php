@@ -1,15 +1,15 @@
 <?php
 /*
-	Plugin Name:			WooCommerce Flutterwave Payment Gateway
+	Plugin Name:			Flutterwave Payment Gateway for WooCommerce
 	Plugin URI: 			https://flutterwave.com
-	Description:            WooCommerce payment gateway for Flutterwave
-	Version:                2.4.0
+	Description:            Flutterwave payment gateway for WooCommerce
+	Version:                2.4.1
 	Author: 				Tunbosun Ayinla
 	Author URI: 			https://bosun.me
 	License:        		GPL-2.0+
 	License URI:    		http://www.gnu.org/licenses/gpl-2.0.txt
-	WC requires at least:   8.0
-	WC tested up to:        8.6
+	WC requires at least:   9.0
+	WC tested up to:        10.2
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,7 +20,7 @@ define( 'TBZ_WC_FLUTTERWAVE_MAIN_FILE', __FILE__ );
 
 define( 'TBZ_WC_FLUTTERWAVE_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
-define( 'TBZ_WC_FLUTTERWAVE_VERSION', '2.4.0' );
+define( 'TBZ_WC_FLUTTERWAVE_VERSION', '2.4.1' );
 
 /**
  * Initialize Flutterwave WooCommerce payment gateway.
