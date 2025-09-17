@@ -2,7 +2,7 @@
 Contributors: tubiz
 Donate link: https://bosun.me/donate
 Tags: woocommerce, flutterwave, payment gateway, payment, rave
-Requires at least: 5.8
+Requires at least: 6.7
 Requires PHP: 7.4
 Tested up to: 6.8
 Stable tag: 2.4.1
