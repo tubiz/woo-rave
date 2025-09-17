@@ -33,9 +33,9 @@ This is a Flutterwave payment gateway for WooCommerce.
 
 You can sign up for a Flutterwave merchant account [here](https://flutterwave.com)
 
-WooCommerce Flutterwave payment gateway plugin allows you to accept payment on your WooCommerce store through multiple payment channels via Flutterwave
+Flutterwave Payment Gateway for WooCommerce plugin allows you to accept payment on your WooCommerce store through multiple payment channels via Flutterwave
 
-With the WooCommerce Flutterwave Payment Gateway plugin, you will be able to accept on your online store via the payment channels below:
+With the Flutterwave Payment Gateway for WooCommerce plugin, you will be able to accept on your online store via the payment channels below:
 
 * __Cards__
 * __Bank Accounts__
@@ -75,7 +75,7 @@ You can also follow me on Twitter! **[@tubiz](http://twitter.com/tubiz)**
 
 
 ### Contribute
-To contribute to this plugin feel free to fork it on GitHub [WooCommerce Flutterwave Payment Gateway](https://github.com/tubiz/woo-rave)
+To contribute to this plugin feel free to fork it on GitHub [Flutterwave Payment Gateway for WooCommerce](https://github.com/tubiz/woo-rave)
 
 
 
@@ -85,8 +85,8 @@ To contribute to this plugin feel free to fork it on GitHub [WooCommerce Flutter
 ### Automatic Installation
 * 	Login to your WordPress Admin area
 * 	Go to "Plugins > Add New" from the left hand menu
-* 	In the search box type "WooCommerce Flutterwave Payment Gateway"
-*	From the search result you will see "WooCommerce Flutterwave Payment Gateway" click on "Install Now" to install the plugin
+* 	In the search box type "Flutterwave Payment Gateway for WooCommerce"
+*	From the search result you will see "Flutterwave Payment Gateway for WooCommerce" click on "Install Now" to install the plugin
 *	A popup window will ask you to confirm your wish to install the Plugin.
 
 
