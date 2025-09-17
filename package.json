@@ -1,17 +1,17 @@
 {
 	"name": "woo-rave",
 	"title": "WooCommerce Flutterwave Payment Gateway",
-	"version": "2.4.0",
+	"version": "2.4.1",
 	"author": "Tunbosun Ayinla",
 	"license": "GPL-3.0+",
 	"keywords": [],
 	"engines": {
-		"node": ">=16.17.0",
-		"npm": ">=8.15.0"
+		"node": ">=20.18.1",
+		"npm": ">=10.2.3"
 	},
 	"devDependencies": {
-		"@woocommerce/dependency-extraction-webpack-plugin": "^2.3.0",
-		"@wordpress/scripts": "^27.2.0"
+		"@woocommerce/dependency-extraction-webpack-plugin": "^4.0.0",
+		"@wordpress/scripts": "^30.24.0"
 	},
 	"scripts": {
 		"start": "wp-scripts start",
