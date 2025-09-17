@@ -1,26 +1,26 @@
-> To install the plugin on your website, use the latest version from the WordPress plugin directory [WooCommerce Flutterwave Payment Gateway](https://wordpress.org/plugins/tubiz/woo-rave)
+> To install the plugin on your website, use the latest version from the WordPress plugin directory [Flutterwave Payment Gateway for WooCommerce](https://wordpress.org/plugins/tubiz/woo-rave)
 
-# WooCommerce Flutterwave Payment Gateway
+# Flutterwave Payment Gateway for WooCommerce
 
 **Contributors:** tubiz
 
 **Donate link:** https://bosun.me/donate
 
-**Tags:** woocommerce, rave, flutterwave, payment gateway, payment gateways, mastercard, visa cards, verve cards, tubiz plugins, verve, nigeria, ghana, kenya, south africa, mpesa
+**Tags:** woocommerce, flutterwave, payment gateway, payment, rave
 
-**Requires at least:** 5.8
+**Requires at least:** 6.7
 
 **Requires PHP:** 7.4
 
-**Tested up to:** 6.4
+**Tested up to:** 6.8
 
-**Stable tag:** 2.4.0
+**Stable tag:** 2.4.1
 
 **License:** GPLv2 or later
 
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html
 
-WooCommerce Flutterwave payment gateway plugin allows you to accept payment on your WooCommerce store through multiple payment channels via Flutterwave
+Flutterwave payment gateway for WooCommerce plugin allows you to accept payment on your WooCommerce store through multiple payment channels via Flutterwave
 
 
 
@@ -56,7 +56,7 @@ With the WooCommerce Flutterwave Payment Gateway plugin, you will be able to acc
 
 *	The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) integration only works with WooCommerce v6.0 and above and WooCommerce Subscriptions v2.0 and above.
 
-*	No subscription plans is created on Flutterwave. The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) handles all the subscription functionality.
+*	No subscription plans are created on Flutterwave. The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) handles all the subscription functionality.
 
 
 ### Note
@@ -150,6 +150,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 2.4.1 (September 17, 2025) =
+*   Update: WooCommerce 10.2 compatibility
+
 ### 2.4.0 (February 17, 2024) =
 *   New: Add support for WooCommerce checkout block
 *   Tweak: Declare compatibility for High Performance Order Storage (HPOS)
@@ -199,14 +202,6 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 *   First release
 
 
-
-
-
-
-## Upgrade Notice
-
-### 2.4.0
-*   Add support for WooCommerce Checkout Block. Declare compatibility for High Performance Order Storage (HPOS).
 
 ## Screenshots
 
